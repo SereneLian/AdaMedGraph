@@ -97,7 +97,7 @@ class APPNP_model(nn.Module):
 class AdaGNN:
     def __init__(self, data, label, features, edge_features, train_idx, val_idx, test_idx, external_idx=[],
                   lr=0.3, hid_dim=512, dropout=0.1, k=5, alpha=0.1, total_epoch=50, single_lr=0.1, 
-                  weight_decay=0, use_weight_loss=False,  threshods = [0.5, 0.25, 0.125], n_estimators=10, early_stopping=10):
+                  weight_decay=0, use_weight_loss=False,  threshods = [0.5, 0.25, 0.125, 0.0625], n_estimators=10, early_stopping=10):
         # data: pandas dataframe with features and labels
         # label: name of label
         self.device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
