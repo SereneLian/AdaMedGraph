@@ -97,7 +97,7 @@ class APPNP_model(nn.Module):
 class AdaGNN:
     def __init__(self, data, label, features, edge_features, train_idx, val_idx, test_idx, external_idx=[],
                   lr=0.3, hid_dim=512, dropout=0.1, k=5, alpha=0.1, total_epoch=50, single_lr=0.1, 
-                  weight_decay=0, use_weight_loss=False,  n_estimators=10, early_stopping=10):
+                  weight_decay=0, use_weight_loss=False,  threshods = [0.5, 0.25, 0.125], n_estimators=10, early_stopping=10):
         # data: pandas dataframe with features and labels
         # label: name of label
         self.device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
@@ -105,6 +105,7 @@ class AdaGNN:
         # self.model = APPNP_model(in_feats= len(features), hid_feats=hid_dim, dropout=dropout, k=k, alpha=alpha).to(self.device)
         self.data = data
         self.label = label
+        self.threshods = threshods
         self.features= features
         self.edge_features = edge_features
         self.train_idx = train_idx
@@ -213,11 +214,10 @@ class AdaGNN:
     
     def best_appnp(self, D_train, D_val, D_test, loss_weight,  remove_edge =[]):
         # appnp_sellog = dict()
-        thresh_list=[1/16, 1/8, 1/4]
         edge_f_list = list(set(self.edge_features)-set(remove_edge))
         losss=100 
         for edge_f in edge_f_list:
-            for thr in thresh_list:
+            for thr in self.threshods:
                 # if self.thresh_all:
                 thresh = self.data[edge_f].quantile(thr)
                 g = age_graph_bulider(self.data, self.label, self.features, edge_f, thresh)
